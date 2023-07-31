@@ -4,6 +4,52 @@ import 'flatpickr/dist/flatpickr.min.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import 'notiflix/dist/notiflix-3.2.6.min.css';
 
+const obj = {
+  dateTimePicker: document.querySelector('#datetime-picker'),
+  startBtn: document.querySelector('[data-start]'),
+  timer: {
+    days: document.querySelector('[data-days]'),
+    hours: document.querySelector('[data-hours]'),
+    minutes: document.querySelector('[data-minutes]'),
+    seconds: document.querySelector('[data-seconds]'),
+  },
+  spans: document.querySelectorAll('.value'),
+};
+
+const options = {
+  enableTime: true,
+  time_24hr: true,
+  defaultDate: new Date(),
+  minuteIncrement: 1,
+  onClose: selectedDates => {
+    console.log(selectedDates[0].getTime());
+    console.log(Date.now());
+    onFlatPicker(selectedDates);
+  },
+};
+
+obj.startBtn.disabled = true;
+
+flatpickr(obj.dateTimePicker, { ...options });
+
+function onFlatPicker(selectedDates) {
+  if (selectedDates[0].getTime() <= Date.now()) {
+    Notify.failure('Please choose a date in the future', {
+      position: 'center-top',
+      clickToClose: true,
+      timeout: 10000,
+    });
+    obj.startBtn.disabled = true;
+  } else {
+    obj.startBtn.disabled = false;
+    Notify.success('Lets go?', {
+      position: 'center-top',
+      clickToClose: true,
+      timeout: 10000,
+    });
+  }
+}
+
 function convertMs(ms) {
   // Number of milliseconds per unit of time
   const second = 1000;
