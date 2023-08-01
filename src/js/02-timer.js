@@ -16,6 +16,9 @@ const obj = {
   spans: document.querySelectorAll('.value'),
 };
 
+let timerId = 0;
+const MLS_PER_SECOND = 1000;
+
 const options = {
   enableTime: true,
   time_24hr: true,
@@ -48,6 +51,32 @@ function onFlatPicker(selectedDates) {
       timeout: 10000,
     });
   }
+}
+
+obj.startBtn.addEventListener('click', onBtnStartClick);
+
+function onBtnStartClick() {
+  obj.startBtn.disabled = true;
+  obj.dateTimePicker.disabled = true;
+  timerId = setInterval(() => {
+    const chooseDate = new Date(obj.dateTimePicker.value);
+    const timeToFinish = chooseDate - Date.now();
+    const { days, hours, minutes, seconds } = convertMs(timeToFinish);
+
+    obj.timer.days.textContent = addLeadingZero(days);
+    obj.timer.hours.textContent = addLeadingZero(hours);
+    obj.timer.minutes.textContent = addLeadingZero(minutes);
+    obj.timer.seconds.textContent = addLeadingZero(seconds);
+
+    if (timeToFinish <= MLS_PER_SECOND) {
+      clearInterval(timerId);
+      obj.dateTimePicker.disabled = false;
+    }
+  }, MLS_PER_SECOND);
+}
+
+function addLeadingZero(value) {
+  return String(value).padStart(2, '0');
 }
 
 function convertMs(ms) {
